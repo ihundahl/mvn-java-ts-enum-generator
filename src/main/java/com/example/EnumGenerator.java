@@ -22,12 +22,60 @@ public class EnumGenerator {
         TypeScriptWriter ts = new TypeScriptWriter();
 
         List<Property> properties = getProperties(enumClass);
+        Set<Class<? extends Enum<?>>> importedEnums = gatherEnumImports(enumClass, properties);
+
+        writeImports(ts, importedEnums);
+
+        if (!importedEnums.isEmpty()) {
+            ts.line();
+        }
 
         writeUnion(ts, enumClass);
         ts.line();
         writeValues(ts, enumClass, properties);
 
         return ts.toString();
+    }
+
+    private Set<Class<? extends Enum<?>>> gatherEnumImports(
+            Class<? extends Enum<?>> enumClass,
+            List<Property> properties) throws Exception {
+
+        Set<Class<? extends Enum<?>>> imports = new java.util.HashSet<>();
+
+        for (Enum<?> constant : enumClass.getEnumConstants()) {
+            for (Property property : properties) {
+                Object value = property.getter().invoke(constant);
+
+                if (value instanceof Enum<?> e) {
+                    @SuppressWarnings("unchecked")
+                    Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) e.getClass();
+
+                    if (!enumType.equals(enumClass)) {
+                        imports.add(enumType);
+                    }
+                }
+            }
+        }
+
+        return imports;
+    }
+
+    private void writeImports(
+            TypeScriptWriter ts,
+            Set<Class<? extends Enum<?>>> importedEnums) {
+
+        importedEnums.stream()
+                .sorted(Comparator.comparing(Class::getSimpleName))
+                .forEach(enumClass -> ts.line("import { "
+                        + enumClass.getSimpleName()
+                        + "Values } from './"
+                        + enumClass.getSimpleName()
+                        + "';"));
+    }
+
+    private String toTypeScriptLiteral(Object value) {
+        return TypeMapper.toTypeScriptLiteral(value);
     }
 
     private List<Property> getProperties(Class<?> enumClass) {
@@ -119,36 +167,6 @@ public class EnumGenerator {
 
         return Character.toLowerCase(text.charAt(0))
                 + text.substring(1);
-    }
-
-    private String toTypeScriptLiteral(Object value) {
-
-        if (value == null) {
-            return "null";
-        }
-
-        if (value instanceof String s) {
-            return "\"" + escape(s) + "\"";
-        }
-
-        if (value instanceof Character c) {
-            return "\"" + escape(c.toString()) + "\"";
-        }
-
-        if (value instanceof Boolean b) {
-            return b.toString();
-        }
-
-        if (value instanceof Number n) {
-            return n.toString();
-        }
-
-        if (value instanceof Enum<?> e) {
-            return "\"" + e.name() + "\"";
-        }
-
-        throw new IllegalArgumentException(
-                "Unsupported value type: " + value.getClass().getName());
     }
 
     private String escape(String value) {

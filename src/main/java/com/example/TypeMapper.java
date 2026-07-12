@@ -27,4 +27,42 @@ public class TypeMapper {
     public static String map(Class<?> type) {
         return TYPES.getOrDefault(type, "any");
     }
+
+    public static String toTypeScriptLiteral(Object value) {
+        if (value == null) {
+            return "null";
+        }
+
+        if (value instanceof String s) {
+            return '"' + escape(s) + '"';
+        }
+
+        if (value instanceof Character c) {
+            return '"' + escape(c.toString()) + '"';
+        }
+
+        if (value instanceof Boolean b) {
+            return b.toString();
+        }
+
+        if (value instanceof Number n) {
+            return n.toString();
+        }
+
+        if (value instanceof Enum<?> e) {
+            return e.getClass().getSimpleName() + "Values." + e.name();
+        }
+
+        throw new IllegalArgumentException(
+                "Unsupported value type: " + value.getClass().getName());
+    }
+
+    private static String escape(String value) {
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
 }
