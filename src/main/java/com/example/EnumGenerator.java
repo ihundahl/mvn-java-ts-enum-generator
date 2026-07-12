@@ -47,12 +47,49 @@ public class EnumGenerator {
             for (Property property : properties) {
                 Object value = property.getter().invoke(constant);
 
+                if (value == null) {
+                    continue;
+                }
+
+                // Single enum value
                 if (value instanceof Enum<?> e) {
                     @SuppressWarnings("unchecked")
                     Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) e.getClass();
 
                     if (!enumType.equals(enumClass)) {
                         imports.add(enumType);
+                    }
+                    continue;
+                }
+
+                // Collections
+                if (value instanceof java.util.Collection<?> coll) {
+                    for (Object elem : coll) {
+                        if (elem instanceof Enum<?> ee) {
+                            @SuppressWarnings("unchecked")
+                            Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) ee.getClass();
+
+                            if (!enumType.equals(enumClass)) {
+                                imports.add(enumType);
+                            }
+                        }
+                    }
+                    continue;
+                }
+
+                // Arrays (including primitive arrays) - check elements
+                if (value.getClass().isArray()) {
+                    int len = java.lang.reflect.Array.getLength(value);
+                    for (int i = 0; i < len; i++) {
+                        Object elem = java.lang.reflect.Array.get(value, i);
+                        if (elem instanceof Enum<?> ee) {
+                            @SuppressWarnings("unchecked")
+                            Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) ee.getClass();
+
+                            if (!enumType.equals(enumClass)) {
+                                imports.add(enumType);
+                            }
+                        }
                     }
                 }
             }

@@ -1,6 +1,9 @@
 package com.example;
 
 import java.util.Map;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.lang.reflect.Array;
 
 public class TypeMapper {
 
@@ -31,6 +34,29 @@ public class TypeMapper {
     public static String toTypeScriptLiteral(Object value) {
         if (value == null) {
             return "null";
+        }
+
+        // Handle collections (List, Set, etc.)
+        if (value instanceof Collection<?> coll) {
+            String joined = coll.stream()
+                    .map(TypeMapper::toTypeScriptLiteral)
+                    .collect(Collectors.joining(", "));
+            return "[" + joined + "]";
+        }
+
+        // Handle arrays (including primitive arrays)
+        if (value.getClass().isArray()) {
+            int len = Array.getLength(value);
+            StringBuilder sb = new StringBuilder();
+            sb.append('[');
+            for (int i = 0; i < len; i++) {
+                Object elem = Array.get(value, i);
+                sb.append(toTypeScriptLiteral(elem));
+                if (i < len - 1)
+                    sb.append(", ");
+            }
+            sb.append(']');
+            return sb.toString();
         }
 
         if (value instanceof String s) {
