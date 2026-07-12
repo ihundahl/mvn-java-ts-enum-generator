@@ -1,0 +1,1 @@
+# mvn-java-ts-enum-generator
