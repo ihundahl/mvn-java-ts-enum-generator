@@ -1,3 +1,5 @@
+//TODO: This file should be used for testing. i.e. asserting the generated files match this.
+
 export type OrderStatus = 'PENDING' | 'SHIPPED' | 'DELIVERED';
 
 export const OrderStatusValues = {
