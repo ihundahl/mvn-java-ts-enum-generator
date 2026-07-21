@@ -205,14 +205,4 @@ public class EnumGenerator {
         return Character.toLowerCase(text.charAt(0))
                 + text.substring(1);
     }
-
-    private String escape(String value) {
-
-        return value
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
-    }
 }

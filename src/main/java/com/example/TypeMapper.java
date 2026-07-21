@@ -1,35 +1,10 @@
 package com.example;
 
-import java.util.Map;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.lang.reflect.Array;
 
 public class TypeMapper {
-
-    private static final Map<Class<?>, String> TYPES = Map.ofEntries(
-            Map.entry(byte.class, "number"),
-            Map.entry(short.class, "number"),
-            Map.entry(int.class, "number"),
-            Map.entry(long.class, "number"),
-            Map.entry(float.class, "number"),
-            Map.entry(double.class, "number"),
-
-            Map.entry(Byte.class, "number"),
-            Map.entry(Short.class, "number"),
-            Map.entry(Integer.class, "number"),
-            Map.entry(Long.class, "number"),
-            Map.entry(Float.class, "number"),
-            Map.entry(Double.class, "number"),
-
-            Map.entry(boolean.class, "boolean"),
-            Map.entry(Boolean.class, "boolean"),
-
-            Map.entry(String.class, "string"));
-
-    public static String map(Class<?> type) {
-        return TYPES.getOrDefault(type, "any");
-    }
 
     public static String toTypeScriptLiteral(Object value) {
         if (value == null) {
@@ -77,6 +52,16 @@ public class TypeMapper {
 
         if (value instanceof Enum<?> e) {
             return e.getClass().getSimpleName() + "Values." + e.name();
+        }
+
+        // If all else fails, try to use the toString() method of the object.
+        try {
+            if (value.getClass().getMethod("toString") != null) {
+                return '"' + escape(value.toString()) + '"';
+            }
+        } catch (NoSuchMethodException e1) {
+            throw new IllegalArgumentException(
+                    "Unsupported value type: " + value.getClass().getName());
         }
 
         throw new IllegalArgumentException(
