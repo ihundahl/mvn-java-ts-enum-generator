@@ -138,26 +138,15 @@ public class EnumGenerator {
             TypeScriptWriter ts,
             Class<? extends Enum<?>> enumClass) {
 
-        Enum<?>[] values = enumClass.getEnumConstants();
-
         StringBuilder line = new StringBuilder();
         line.append("export type ")
                 .append(enumClass.getSimpleName())
-                .append(" = ");
-
-        for (int i = 0; i < values.length; i++) {
-
-            if (i > 0) {
-                line.append(" | ");
-            }
-
-            line.append("'")
-                    .append(values[i].name())
-                    .append("'");
-        }
-
-        line.append(";");
-
+                .append(" = ")
+                .append("(typeof ")
+                .append(enumClass.getSimpleName() + "Values)")
+                .append("[keyof typeof ")
+                .append(enumClass.getSimpleName() + "Values]")
+                .append(";");
         ts.line(line.toString());
     }
 

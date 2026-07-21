@@ -1,4 +1,4 @@
-export type OrderStatus = 'PENDING' | 'SHIPPED' | 'DELIVERED';
+export type OrderStatus = (typeof OrderStatusValues)[keyof typeof OrderStatusValues];
 
 export const OrderStatusValues = {
     PENDING: {

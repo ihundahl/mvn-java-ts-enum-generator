@@ -1,6 +1,6 @@
 import { OrderStatusValues } from './OrderStatus';
 
-export type OtherEnum = 'FIRST' | 'SECOND' | 'THIRD';
+export type OtherEnum = (typeof OtherEnumValues)[keyof typeof OtherEnumValues];
 
 export const OtherEnumValues = {
     FIRST: {

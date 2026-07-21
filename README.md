@@ -99,7 +99,7 @@ public enum OtherEnum {
 ```typescript
 // OrderStatus.ts
 
-export type OrderStatus = 'PENDING' | 'SHIPPED' | 'DELIVERED';
+export type OrderStatus = (typeof OrderStatusValues)[keyof typeof OrderStatusValues];
 
 export const OrderStatusValues = {
     PENDING: {
@@ -129,7 +129,7 @@ export const OrderStatusValues = {
 
 import { OrderStatusValues } from './OrderStatus';
 
-export type OtherEnum = 'FIRST' | 'SECOND' | 'THIRD';
+export type OtherEnum = (typeof OtherEnumValues)[keyof typeof OtherEnumValues];
 
 export const OtherEnumValues = {
     FIRST: {
@@ -154,4 +154,5 @@ export const OtherEnumValues = {
         status: OrderStatusValues.DELIVERED,
     },
 } as const;
+
 ```
