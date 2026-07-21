@@ -80,45 +80,6 @@
                 </executions>
             </plugin>
 
-            <!-- <plugin>
-                <groupId>cz.habarta.typescript-generator</groupId>
-                <artifactId>typescript-generator-maven-plugin</artifactId>
-                <version>${ts-generator.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-ts-enums</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-                <configuration>
-                    <jsonLibrary>jackson2</jsonLibrary>
-                    <outputKind>module</outputKind>
-                    <mapEnum>asUnion</mapEnum>
-                    <outputFileType>implementationFile</outputFileType>
-
-                    <jackson2ConfigurationClass>com.example.config.TypeScriptJacksonConfig</jackson2ConfigurationClass>
-
-                    <classes>
-                        <class>com.example.OrderStatus</class>
-                    </classes>
-
-                    <outputFile>${project.build.directory}/generated-sources/typescript/enums.ts</outputFile>
-
-                    <customTypeNamingFunction>
-                        function(name, simpleName) {
-                        if (simpleName.endsWith('Details')) {
-                        return simpleName.replace('Details', 'Model');
-                        }
-                        }
-                    </customTypeNamingFunction>
-
-                    <generateEnumConstantList>true</generateEnumConstantList>
-                </configuration>
-            </plugin> -->
         </plugins>
     </build>
 </project>
